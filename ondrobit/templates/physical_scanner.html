@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physical Scanner Mode</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .scanner-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 450px;
+            border-top: 5px solid #007bff;
+        }
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
+        #result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            min-height: 30px;
+            word-break: break-all;
+        }
+        /* ইনপুট ফিল্ডটি স্ক্রিনে দেখা যাবে না কিন্তু ফোকাস ধরে রাখবে */
+        input { position: absolute; opacity: 0; pointer-events: none; }
+        
+        .refresh-msg {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #007bff;
+            display: none; /* শুরুতে লুকানো থাকবে */
+        }
+    </style>
+</head>
+<body>
+
+<div class="scanner-container">
+    <div>
+        <span class="status-dot"></span>
+        <span style="color: #666; font-weight: 500;">Physical Scanner Connected</span>
+    </div>
+    
+    <h2 style="margin-top: 15px;">Netum M10 Scanner</h2>
+    <p style="color: #888;">বারকোড স্ক্যান করুন</p>
+
+    <input type="text" id="scannerInput" autofocus>
+
+    <div id="result-box">--- স্ক্যানের অপেক্ষায় ---</div>
+    
+    <div id="refreshMessage" class="refresh-msg">নতুন স্ক্যানের জন্য রিফ্রেশ হচ্ছে...</div>
+
+    <p style="margin-top: 25px; font-size: 13px; color: #adb5bd;">
+        সতর্কতা: প্রতিটি স্ক্যানের পর পেজটি অটো-রিফ্রেশ হবে।
+    </p>
+</div>
+
+<script>
+    const input = document.getElementById('scannerInput');
+    const resultBox = document.getElementById('result-box');
+    const refreshMsg = document.getElementById('refreshMessage');
+
+    // সবসময় ইনপুট ফিল্ডকে ফোকাস করে রাখবে
+    document.addEventListener('click', () => {
+        input.focus();
+    });
+
+    // স্ক্যানার যখন ডাটা পাঠিয়ে 'Enter' প্রেস করবে
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const scannedValue = input.value.trim();
+            
+            if (scannedValue !== "") {
+                // ১. রেজাল্ট বক্সে ডাটা দেখানো
+                resultBox.innerText = scannedValue;
+                resultBox.style.color = "#28a745";
+                resultBox.style.borderColor = "#28a745";
+                
+                // ২. রিফ্রেশ মেসেজ দেখানো
+                refreshMsg.style.display = "block";
+                
+                console.log("Scanned Data:", scannedValue);
+                
+                // ৩. ২ সেকেন্ড পর পেজ রিফ্রেশ করা
+                setTimeout(() => {
+                    location.reload(); 
+                }, 2000); 
+
+                input.value = ''; // ইনপুট খালি করা
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
